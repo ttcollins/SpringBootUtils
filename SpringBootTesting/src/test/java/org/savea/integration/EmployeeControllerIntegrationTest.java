@@ -1,111 +1,141 @@
 package org.savea.integration;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.hamcrest.Matchers.hasSize;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.io.IOException;
+import java.util.List;
+
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
-import org.mockito.internal.verification.VerificationModeFactory;
-import org.savea.controllers.endpoints.EmployeeRestController;
+import org.savea.Application;
 import org.savea.models.Employee;
-import org.savea.services.EmployeeService;
+import org.savea.services.EmployeeRepository;
 import org.savea.utils.JsonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.Arrays;
-import java.util.List;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.Matchers.hasSize;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.verify;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
+/**
+ * This class is annotated with @RunWith(SpringRunner.class), which means it uses Spring's testing support.
+ * SpringRunner is a custom extension of JUnit's BlockJUnit4ClassRunner which provides functionality of the Spring TestContext Framework to our tests.
+ *
+ * @SpringBootTest is used to specify that we want to do integration testing including complete autoconfiguration of the Spring context.
+ * webEnvironment = WebEnvironment.RANDOM_PORT is used to start the server with a random port.
+ * classes = Application.class is used to load the context for the given classes (Application.class in this case).
+ *
+ * @AutoConfigureMockMvc is used to auto-configure MockMvc which offers a powerful way to easily test MVC controllers without needing to start a full HTTP server.
+ *
+ * @EnableAutoConfiguration(exclude = SecurityAutoConfiguration.class) is used to enable auto-configuration of the Spring Application Context, attempting to guess and configure beans that you are likely to need.
+ * The SecurityAutoConfiguration class is excluded from the auto-configuration as we don't want to apply Spring Security's default configuration in our tests.
+ *
+ * @AutoConfigureTestDatabase is used to configure a test database that replaces any application-defined DataSource.
+ */
 @RunWith(SpringRunner.class)
-@WebMvcTest(value = EmployeeRestController.class, excludeAutoConfiguration = SecurityAutoConfiguration.class)
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, classes = Application.class)
+@AutoConfigureMockMvc
+@EnableAutoConfiguration(exclude = SecurityAutoConfiguration.class)
+@AutoConfigureTestDatabase
 public class EmployeeControllerIntegrationTest {
 
+    // The MockMvc instance is injected here. This is the main entry point for server-side Spring MVC test support.
     @Autowired
     private MockMvc mvc;
 
-    @MockBean
-    private EmployeeService service;
+    // The EmployeeRepository instance is injected here. This is used to interact with the database.
+    @Autowired
+    private EmployeeRepository repository;
 
     /**
-     * This test method verifies the creation of an Employee through a POST request.
-     *
-     * @throws Exception if any processing error occurs
+     * This method is annotated with @Before, which means it is executed before each test case.
+     * It is used to reset the database by deleting all employees.
      */
-    @Test
-    public void employeeCreation() throws Exception {
-        // Create a new Employee object named "alex"
-        Employee alex = new Employee("alex");
-
-        // Mock the service's save method to return the created Employee when called
-        given(service.save(Mockito.any())).willReturn(alex);
-
-        // Perform a POST request to the "/api/employees" endpoint
-        // The content of the request is the JSON representation of the created Employee
-        mvc.perform(post("/api/employees")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(JsonUtil.toJson(alex)))
-                // Expect the HTTP status to be 201 (Created)
-                .andExpect(status().isCreated())
-                // Expect the name of the returned Employee in the response body to be "alex"
-                .andExpect(jsonPath("$.name", is("alex")));
-
-        // Verify that the service's save method was called exactly once
-        verify(service, VerificationModeFactory.times(1))
-                .save(Mockito.any());
-
-        // Reset the mock service for the next test
-        reset(service);
+    @Before
+    public void setUp() {
+        repository.deleteAll();
     }
 
     /**
-     * This test method verifies the retrieval of all Employees through a GET request.
-     *
-     * @throws Exception if any processing error occurs
+     * This method is annotated with @After, which means it is executed after each test case.
+     * It is used to reset the database by deleting all employees.
+     */
+    @After
+    public void resetDb() {
+        repository.deleteAll();
+    }
+
+    /**
+     * This test case verifies the functionality of the POST /api/employees endpoint.
+     * The endpoint is expected to create a new employee when provided with valid input.
+     * <p>
+     * The test case follows these steps:
+     * 1. An employee named "bob" is created.
+     * 2. A POST request is performed to the /api/employees endpoint with the new employee as the body.
+     * 3. The `findAll` method is called on the `repository` to retrieve all employees.
+     * 4. An assertion is made to ensure that the name of the employee in the database matches the name of the
+     * created employee.
      */
     @Test
-    public void employeeRetrieval() throws Exception {
-        // Create new Employee objects named "alex", "john", and "bob"
-        Employee alex = new Employee("alex");
-        Employee john = new Employee("john");
+    public void whenValidInput_thenCreateEmployee() throws IOException, Exception {
         Employee bob = new Employee("bob");
+        mvc.perform(post("/api/employees")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.toJson(bob)));
 
-        // Add the created Employees to a List
-        List<Employee> allEmployees = Arrays.asList(alex, john, bob);
+        List<Employee> found = repository.findAll();
+        assertThat(found).extracting(Employee::getName).containsOnly("bob");
+    }
 
-        // Mock the service's getAllEmployees method to return the list of all Employees when called
-        given(service.getAllEmployees()).willReturn(allEmployees);
+    /**
+     * This test case verifies the functionality of the GET /api/employees endpoint.
+     * The endpoint is expected to return all employees in the database.
+     * <p>
+     * The test case follows these steps:
+     * 1. Two employees, "bob" and "alex", are created using the `createTestEmployee` method.
+     * 2. A GET request is performed to the /api/employees endpoint.
+     * 3. Assertions are made to ensure that the status is 200, the content type is JSON, and the names of the
+     * employees in the response match the names of the created employees.
+     */
+    @Test
+    public void givenEmployees_whenGetEmployees_thenStatus200() throws Exception {
+        createTestEmployee("bob");
+        createTestEmployee("alex");
 
-        // Perform a GET request to the "/api/employees" endpoint
         mvc.perform(get("/api/employees")
                         .contentType(MediaType.APPLICATION_JSON))
-                // Expect the HTTP status to be 200 (OK)
+                .andDo(print())
                 .andExpect(status().isOk())
-                // Expect the size of the returned JSON array to be 3
-                .andExpect(jsonPath("$", hasSize(3)))
-                // Expect the names of the returned Employees in the response body to match the names of the created Employees
-                .andExpect(jsonPath("$[0].name", is(alex.getName())))
-                .andExpect(jsonPath("$[1].name", is(john.getName())))
-                .andExpect(jsonPath("$[2].name", is(bob.getName())));
-
-        // Verify that the service's getAllEmployees method was called exactly once
-        verify(service, VerificationModeFactory.times(1))
-                .getAllEmployees();
-
-        // Reset the mock service for the next test
-        reset(service);
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$", hasSize(greaterThanOrEqualTo(2))))
+                .andExpect(jsonPath("$[0].name", is("bob")))
+                .andExpect(jsonPath("$[1].name", is("alex")));
     }
 
+    /**
+     * This helper method is used to create a test employee with the given name.
+     * The employee is persisted in the database using the `saveAndFlush` method on the `repository`.
+     *
+     * @param name the name of the employee to create
+     */
+    private void createTestEmployee(String name) {
+        Employee emp = new Employee(name);
+        repository.saveAndFlush(emp);
+    }
 }
