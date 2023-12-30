@@ -29,6 +29,17 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+/**
+ * This class is annotated with @RunWith(SpringRunner.class), which means it uses Spring's testing support.
+ * SpringRunner is a custom extension of JUnit's BlockJUnit4ClassRunner which provides functionality of the Spring
+ * TestContext Framework to our tests.
+ *
+ * @WebMvcTest is used for Spring MVC tests. It auto-configures an instance of Spring MockMvc which allows us to send
+ * HTTP requests into the DispatcherServlet and make assertions about the result.
+ * value = EmployeeRestController.class specifies that we want to test the EmployeeRestController.
+ * excludeAutoConfiguration = SecurityAutoConfiguration.class is used to exclude the SecurityAutoConfiguration from
+ * the test context. This is useful when we want to disable Spring Security for our tests.
+ */
 @RunWith(SpringRunner.class)
 @WebMvcTest(value = EmployeeRestController.class, excludeAutoConfiguration = SecurityAutoConfiguration.class)
 public class EmployeeControllerUnitTest {

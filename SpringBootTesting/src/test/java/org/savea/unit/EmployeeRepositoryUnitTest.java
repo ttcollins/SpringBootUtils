@@ -13,6 +13,14 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+/**
+ * @RunWith(SpringRunner.class) is a JUnit annotation that tells JUnit to run the test using Spring's testing support.
+ * SpringRunner is the new name for SpringJUnit4ClassRunner, it's just a new name for the same class.
+ *
+ * @DataJpaTest is a Spring Boot annotation used for JPA tests. It disables full auto-configuration and instead apply only
+ * configuration relevant to JPA tests. By default, tests annotated with @DataJpaTest are transactional and roll back at the
+ * end of each test. They also use an embedded in-memory database (replacing any explicit or usually auto-configured DataSource).
+ */
 @RunWith(SpringRunner.class)
 @DataJpaTest
 public class EmployeeRepositoryUnitTest {
