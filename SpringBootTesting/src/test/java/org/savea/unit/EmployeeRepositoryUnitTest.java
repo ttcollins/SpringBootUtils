@@ -1,4 +1,4 @@
-package org.savea.integration;
+package org.savea.unit;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,7 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
-public class EmployeeRepositoryIntegrationTest {
+public class EmployeeRepositoryUnitTest {
 
     @Autowired
     private TestEntityManager entityManager;

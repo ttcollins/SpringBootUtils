@@ -19,8 +19,10 @@ To get started with this module, you need to have Java and Maven installed on yo
 4. Run `mvn test` to run the tests
 
 ## Topics Covered
-- Unit Testing: Writing tests for individual components in isolation.
-- Integration Testing: Testing the interaction between multiple components.
+- Unit Testing: Writing tests for individual components/layers in isolation. Interactions between layers are 
+mocked (using Mockito).
+- Integration Testing: Testing the interaction between multiple components/layers. No mocking is used. 
+Testing is end to end.
 - End-to-End Testing: Testing the entire application from start to finish.
 
 ## Resources
