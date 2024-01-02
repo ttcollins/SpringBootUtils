@@ -30,5 +30,6 @@ Testing is end to end.
 - [JUnit 5 User Guide](https://junit.org/junit5/docs/current/user-guide/)
 - [Mockito Documentation](https://javadoc.io/doc/org.mockito/mockito-core/latest/index.html)
 - [Baeldung Tutorial](https://www.baeldung.com/spring-boot-testing)
+- [Amigos Code Tutorial](https://www.youtube.com/watch?v=Geq60OVyBPg&t=2988s)
 
 Please refer to the individual test files for detailed explanations and examples of each topic.
