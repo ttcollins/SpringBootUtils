@@ -1,23 +1,8 @@
 package org.savea.integration;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.Matchers.greaterThanOrEqualTo;
-import static org.hamcrest.Matchers.hasSize;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import java.io.IOException;
-import java.util.List;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.savea.Application;
 import org.savea.models.Employee;
 import org.savea.services.EmployeeRepository;
@@ -30,16 +15,23 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.io.IOException;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.hamcrest.Matchers.hasSize;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
  * This class is annotated with @RunWith(SpringRunner.class), which means it uses Spring's testing support.
  * SpringRunner is a custom extension of JUnit's BlockJUnit4ClassRunner which provides functionality of the Spring TestContext Framework to our tests.
- *
- * @SpringBootTest is used to specify that we want to do integration testing including complete autoconfiguration of the Spring context.
- * webEnvironment = WebEnvironment.RANDOM_PORT is used to start the server with a random port.
- * classes = Application.class is used to load the context for the given classes (Application.class in this case).
  *
  * @AutoConfigureMockMvc is used to auto-configure MockMvc which offers a powerful way to easily test MVC controllers without needing to start a full HTTP server.
  *
@@ -48,12 +40,11 @@ import org.springframework.test.web.servlet.MockMvc;
  *
  * @AutoConfigureTestDatabase is used to configure a test database that replaces any application-defined DataSource.
  */
-@RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, classes = Application.class)
 @AutoConfigureMockMvc
 @EnableAutoConfiguration(exclude = SecurityAutoConfiguration.class)
 @AutoConfigureTestDatabase
-public class EmployeeControllerIntegrationTest {
+class EmployeeControllerIntegrationTest {
 
     // The MockMvc instance is injected here. This is the main entry point for server-side Spring MVC test support.
     @Autowired
@@ -67,7 +58,7 @@ public class EmployeeControllerIntegrationTest {
      * This method is annotated with @Before, which means it is executed before each test case.
      * It is used to reset the database by deleting all employees.
      */
-    @Before
+    @BeforeEach
     public void setUp() {
         repository.deleteAll();
     }
@@ -76,7 +67,7 @@ public class EmployeeControllerIntegrationTest {
      * This method is annotated with @After, which means it is executed after each test case.
      * It is used to reset the database by deleting all employees.
      */
-    @After
+    @AfterEach
     public void resetDb() {
         repository.deleteAll();
     }
@@ -93,7 +84,7 @@ public class EmployeeControllerIntegrationTest {
      * created employee.
      */
     @Test
-    public void whenValidInput_thenCreateEmployee() throws IOException, Exception {
+    void whenValidInput_thenCreateEmployee() throws IOException, Exception {
         Employee bob = new Employee("bob");
         mvc.perform(post("/api/employees")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -114,7 +105,7 @@ public class EmployeeControllerIntegrationTest {
      * employees in the response match the names of the created employees.
      */
     @Test
-    public void givenEmployees_whenGetEmployees_thenStatus200() throws Exception {
+    void givenEmployees_whenGetEmployees_thenStatus200() throws Exception {
         createTestEmployee("bob");
         createTestEmployee("alex");
 

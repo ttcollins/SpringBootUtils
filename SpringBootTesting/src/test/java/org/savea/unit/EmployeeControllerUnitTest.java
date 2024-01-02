@@ -1,7 +1,6 @@
 package org.savea.unit;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.mockito.internal.verification.VerificationModeFactory;
 import org.savea.controllers.endpoints.EmployeeRestController;
@@ -13,7 +12,6 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfi
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Arrays;
@@ -30,19 +28,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
- * This class is annotated with @RunWith(SpringRunner.class), which means it uses Spring's testing support.
- * SpringRunner is a custom extension of JUnit's BlockJUnit4ClassRunner which provides functionality of the Spring
- * TestContext Framework to our tests.
- *
  * @WebMvcTest is used for Spring MVC tests. It auto-configures an instance of Spring MockMvc which allows us to send
  * HTTP requests into the DispatcherServlet and make assertions about the result.
  * value = EmployeeRestController.class specifies that we want to test the EmployeeRestController.
  * excludeAutoConfiguration = SecurityAutoConfiguration.class is used to exclude the SecurityAutoConfiguration from
  * the test context. This is useful when we want to disable Spring Security for our tests.
  */
-@RunWith(SpringRunner.class)
 @WebMvcTest(value = EmployeeRestController.class, excludeAutoConfiguration = SecurityAutoConfiguration.class)
-public class EmployeeControllerUnitTest {
+class EmployeeControllerUnitTest {
 
     // The MockMvc instance is injected here. This is the main entry point for server-side Spring MVC test support.
     // It allows us to execute requests against the test context and assert the results.
@@ -60,7 +53,7 @@ public class EmployeeControllerUnitTest {
      * @throws Exception if any processing error occurs
      */
     @Test
-    public void employeeCreation() throws Exception {
+    void employeeCreation() throws Exception {
         // Create a new Employee object named "alex"
         Employee alex = new Employee("alex");
 
@@ -91,7 +84,7 @@ public class EmployeeControllerUnitTest {
      * @throws Exception if any processing error occurs
      */
     @Test
-    public void employeeRetrieval() throws Exception {
+    void employeeRetrieval() throws Exception {
         // Create new Employee objects named "alex", "john", and "bob"
         Employee alex = new Employee("alex");
         Employee john = new Employee("john");

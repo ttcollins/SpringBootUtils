@@ -1,27 +1,21 @@
 package org.savea.unit;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.savea.models.Employee;
 import org.savea.services.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * @RunWith(SpringRunner.class) is a JUnit annotation that tells JUnit to run the test using Spring's testing support.
- * SpringRunner is the new name for SpringJUnit4ClassRunner, it's just a new name for the same class.
- *
  * @DataJpaTest is a Spring Boot annotation used for JPA tests. It disables full auto-configuration and instead apply only
  * configuration relevant to JPA tests. By default, tests annotated with @DataJpaTest are transactional and roll back at the
  * end of each test. They also use an embedded in-memory database (replacing any explicit or usually auto-configured DataSource).
  */
-@RunWith(SpringRunner.class)
 @DataJpaTest
 public class EmployeeRepositoryUnitTest {
 
@@ -41,7 +35,7 @@ public class EmployeeRepositoryUnitTest {
      * 3. An assertion is made to ensure that the name of the returned employee matches the name of the persisted employee.
      */
     @Test
-    public void whenFindByName_thenReturnEmployee() {
+    void whenFindByName_thenReturnEmployee() {
         Employee alex = new Employee("alex");
         entityManager.persistAndFlush(alex);
 
@@ -59,7 +53,7 @@ public class EmployeeRepositoryUnitTest {
      * 2. An assertion is made to ensure that the returned employee is null.
      */
     @Test
-    public void whenInvalidName_thenReturnNull() {
+    void whenInvalidName_thenReturnNull() {
         Employee fromDb = employeeRepository.findByName("doesNotExist");
         assertThat(fromDb).isNull();
     }
@@ -76,7 +70,7 @@ public class EmployeeRepositoryUnitTest {
      * of the persisted employee.
      */
     @Test
-    public void whenFindById_thenReturnEmployee() {
+    void whenFindById_thenReturnEmployee() {
         Employee emp = new Employee("test");
         entityManager.persistAndFlush(emp);
 
@@ -96,7 +90,7 @@ public class EmployeeRepositoryUnitTest {
      * 3. An assertion is made to ensure that the returned employee is null.
      */
     @Test
-    public void whenInvalidId_thenReturnNull() {
+    void whenInvalidId_thenReturnNull() {
         Employee fromDb = employeeRepository.findById(-11L).orElse(null);
         assertThat(fromDb).isNull();
     }
@@ -112,7 +106,7 @@ public class EmployeeRepositoryUnitTest {
      * and that the names of the employees in the returned list match the names of the persisted employees.
      */
     @Test
-    public void givenSetOfEmployees_whenFindAll_thenReturnAllEmployees() {
+    void givenSetOfEmployees_whenFindAll_thenReturnAllEmployees() {
         Employee alex = new Employee("alex");
         Employee ron = new Employee("ron");
         Employee bob = new Employee("bob");

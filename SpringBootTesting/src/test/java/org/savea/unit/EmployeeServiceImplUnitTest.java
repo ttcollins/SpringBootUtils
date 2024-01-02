@@ -1,22 +1,23 @@
 package org.savea.unit;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.internal.verification.VerificationModeFactory;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.savea.models.Employee;
 import org.savea.services.EmployeeRepository;
 import org.savea.services.impl.EmployeeServiceImpl;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.lenient;
 
 /**
  * This class is a unit test for the EmployeeServiceImpl class.
@@ -24,20 +25,20 @@ import static org.assertj.core.api.Assertions.assertThat;
  * The @InjectMocks annotation is used to inject the mocked dependencies into the EmployeeServiceImpl.
  * The @Mock annotation is used to create a mock implementation of the EmployeeRepository.
  */
-@RunWith(SpringRunner.class)
-public class EmployeeServiceImplUnitTest {
-
-    @InjectMocks
-    private EmployeeServiceImpl employeeService;
+@ExtendWith(MockitoExtension.class)
+class EmployeeServiceImplUnitTest {
 
     @Mock
     private EmployeeRepository employeeRepository;
+
+    @InjectMocks
+    private EmployeeServiceImpl employeeService;
 
     /**
      * This method is annotated with @Before, which means it is executed before each test case.
      * It sets up the mock responses for the methods of EmployeeRepository.
      */
-    @Before
+    @BeforeEach
     public void setUp() {
         Employee john = new Employee("john");
         john.setId(11L);
@@ -47,12 +48,12 @@ public class EmployeeServiceImplUnitTest {
 
         List<Employee> allEmployees = Arrays.asList(john, bob, alex);
 
-        Mockito.when(employeeRepository.findByName(john.getName())).thenReturn(john);
-        Mockito.when(employeeRepository.findByName(alex.getName())).thenReturn(alex);
-        Mockito.when(employeeRepository.findByName("wrong_name")).thenReturn(null);
-        Mockito.when(employeeRepository.findById(john.getId())).thenReturn(Optional.of(john));
-        Mockito.when(employeeRepository.findAll()).thenReturn(allEmployees);
-        Mockito.when(employeeRepository.findById(-99L)).thenReturn(Optional.empty());
+        lenient().when(employeeRepository.findByName(john.getName())).thenReturn(john);
+        lenient().when(employeeRepository.findByName(alex.getName())).thenReturn(alex);
+        lenient().when(employeeRepository.findByName("wrong_name")).thenReturn(null);
+        lenient().when(employeeRepository.findById(john.getId())).thenReturn(Optional.of(john));
+        lenient().when(employeeRepository.findAll()).thenReturn(allEmployees);
+        lenient().when(employeeRepository.findById(-99L)).thenReturn(Optional.empty());
     }
 
     /**
@@ -60,7 +61,7 @@ public class EmployeeServiceImplUnitTest {
      * The method is expected to return the employee with the given name if such an employee exists.
      */
     @Test
-    public void whenValidName_thenEmployeeShouldBeFound() {
+    void whenValidName_thenEmployeeShouldBeFound() {
         String name = "alex";
         Employee found = employeeService.getEmployeeByName(name);
 
@@ -73,7 +74,7 @@ public class EmployeeServiceImplUnitTest {
      * The method is expected to return null if no employee with the given name exists.
      */
     @Test
-    public void whenInValidName_thenEmployeeShouldNotBeFound() {
+    void whenInValidName_thenEmployeeShouldNotBeFound() {
         Employee fromDb = employeeService.getEmployeeByName("wrong_name");
         assertThat(fromDb).isNull();
 
@@ -85,7 +86,7 @@ public class EmployeeServiceImplUnitTest {
      * The method is expected to return true if an employee with the given name exists.
      */
     @Test
-    public void whenValidName_thenEmployeeShouldExist() {
+    void whenValidName_thenEmployeeShouldExist() {
         boolean doesEmployeeExist = employeeService.exists("john");
         assertThat(doesEmployeeExist).isTrue();
 
@@ -98,7 +99,7 @@ public class EmployeeServiceImplUnitTest {
      * The method is expected to return false if no employee with the given name exists.
      */
     @Test
-    public void whenNonExistingName_thenEmployeeShouldNotExist() {
+    void whenNonExistingName_thenEmployeeShouldNotExist() {
         boolean doesEmployeeExist = employeeService.exists("some_name");
         assertThat(doesEmployeeExist).isFalse();
 
@@ -110,7 +111,7 @@ public class EmployeeServiceImplUnitTest {
      * The method is expected to return the employee with the given ID if such an employee exists.
      */
     @Test
-    public void whenValidId_thenEmployeeShouldBeFound() {
+    void whenValidId_thenEmployeeShouldBeFound() {
         Employee fromDb = employeeService.getEmployeeById(11L);
         assertThat(fromDb.getName()).isEqualTo("john");
 
@@ -123,7 +124,7 @@ public class EmployeeServiceImplUnitTest {
      * The method is expected to return null if no employee with the given ID exists.
      */
     @Test
-    public void whenInValidId_thenEmployeeShouldNotBeFound() {
+    void whenInValidId_thenEmployeeShouldNotBeFound() {
         Employee fromDb = employeeService.getEmployeeById(-99L);
         verifyFindByIdIsCalledOnce();
         assertThat(fromDb).isNull();
@@ -134,7 +135,7 @@ public class EmployeeServiceImplUnitTest {
      * The method is expected to return all employees.
      */
     @Test
-    public void given3Employees_whenGetAll_thenReturn3Records() {
+    void given3Employees_whenGetAll_thenReturn3Records() {
         Employee alex = new Employee("alex");
         Employee john = new Employee("john");
         Employee bob = new Employee("bob");
