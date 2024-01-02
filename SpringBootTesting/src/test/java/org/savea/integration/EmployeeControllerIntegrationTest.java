@@ -1,6 +1,5 @@
 package org.savea.integration;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.savea.Application;
@@ -30,15 +29,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
- * This class is annotated with @RunWith(SpringRunner.class), which means it uses Spring's testing support.
- * SpringRunner is a custom extension of JUnit's BlockJUnit4ClassRunner which provides functionality of the Spring TestContext Framework to our tests.
- *
- * @AutoConfigureMockMvc is used to auto-configure MockMvc which offers a powerful way to easily test MVC controllers without needing to start a full HTTP server.
- *
- * @EnableAutoConfiguration(exclude = SecurityAutoConfiguration.class) is used to enable auto-configuration of the Spring Application Context, attempting to guess and configure beans that you are likely to need.
- * The SecurityAutoConfiguration class is excluded from the auto-configuration as we don't want to apply Spring Security's default configuration in our tests.
- *
- * @AutoConfigureTestDatabase is used to configure a test database that replaces any application-defined DataSource.
+ * This class is a Spring Boot integration test for the EmployeeController class.
+ * It uses the @SpringBootTest annotation to indicate that it should start an embedded servlet container.
+ * The @AutoConfigureMockMvc annotation is used to auto-configure a MockMvc instance, which is used to perform HTTP requests.
+ * The @EnableAutoConfiguration annotation is used to enable auto-configuration of the Spring Application Context, excluding the SecurityAutoConfiguration class.
+ * The @AutoConfigureTestDatabase annotation is used to replace the application-defined DataSource with a test database.
  */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, classes = Application.class)
 @AutoConfigureMockMvc
@@ -46,42 +41,32 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureTestDatabase
 class EmployeeControllerIntegrationTest {
 
-    // The MockMvc instance is injected here. This is the main entry point for server-side Spring MVC test support.
+    /**
+     * The MockMvc instance is used to perform HTTP requests in the tests.
+     */
     @Autowired
     private MockMvc mvc;
 
-    // The EmployeeRepository instance is injected here. This is used to interact with the database.
+    /**
+     * The EmployeeRepository instance is used to interact with the database in the tests.
+     */
     @Autowired
     private EmployeeRepository repository;
 
     /**
-     * This method is annotated with @Before, which means it is executed before each test case.
-     * It is used to reset the database by deleting all employees.
+     * This method is run before each test case.
+     * It uses the deleteAll method of the repository to clear all existing employees from the database.
+     * This ensures that each test case starts with a clean database.
      */
     @BeforeEach
-    public void setUp() {
-        repository.deleteAll();
-    }
-
-    /**
-     * This method is annotated with @After, which means it is executed after each test case.
-     * It is used to reset the database by deleting all employees.
-     */
-    @AfterEach
-    public void resetDb() {
+    void setUp() {
         repository.deleteAll();
     }
 
     /**
      * This test case verifies the functionality of the POST /api/employees endpoint.
-     * The endpoint is expected to create a new employee when provided with valid input.
-     * <p>
-     * The test case follows these steps:
-     * 1. An employee named "bob" is created.
-     * 2. A POST request is performed to the /api/employees endpoint with the new employee as the body.
-     * 3. The `findAll` method is called on the `repository` to retrieve all employees.
-     * 4. An assertion is made to ensure that the name of the employee in the database matches the name of the
-     * created employee.
+     * It creates a new employee and performs a POST request to the endpoint with the new employee as the body.
+     * It then retrieves all employees from the database and asserts that the name of the employee in the database matches the name of the created employee.
      */
     @Test
     void whenValidInput_thenCreateEmployee() throws IOException, Exception {
@@ -96,13 +81,8 @@ class EmployeeControllerIntegrationTest {
 
     /**
      * This test case verifies the functionality of the GET /api/employees endpoint.
-     * The endpoint is expected to return all employees in the database.
-     * <p>
-     * The test case follows these steps:
-     * 1. Two employees, "bob" and "alex", are created using the `createTestEmployee` method.
-     * 2. A GET request is performed to the /api/employees endpoint.
-     * 3. Assertions are made to ensure that the status is 200, the content type is JSON, and the names of the
-     * employees in the response match the names of the created employees.
+     * It creates two employees and performs a GET request to the endpoint.
+     * It then asserts that the status is 200, the content type is JSON, and the names of the employees in the response match the names of the created employees.
      */
     @Test
     void givenEmployees_whenGetEmployees_thenStatus200() throws Exception {
@@ -121,7 +101,7 @@ class EmployeeControllerIntegrationTest {
 
     /**
      * This helper method is used to create a test employee with the given name.
-     * The employee is persisted in the database using the `saveAndFlush` method on the `repository`.
+     * The employee is persisted in the database using the saveAndFlush method of the repository.
      *
      * @param name the name of the employee to create
      */

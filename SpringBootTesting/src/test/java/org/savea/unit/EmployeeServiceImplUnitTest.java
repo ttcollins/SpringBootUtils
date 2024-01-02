@@ -28,14 +28,20 @@ import static org.mockito.Mockito.lenient;
 @ExtendWith(MockitoExtension.class)
 class EmployeeServiceImplUnitTest {
 
+    /**
+     * Mock instance of EmployeeRepository.
+     */
     @Mock
     private EmployeeRepository employeeRepository;
 
+    /**
+     * Instance of the service being tested, with mocked dependencies.
+     */
     @InjectMocks
     private EmployeeServiceImpl employeeService;
 
     /**
-     * This method is annotated with @Before, which means it is executed before each test case.
+     * This method is executed before each test case.
      * It sets up the mock responses for the methods of EmployeeRepository.
      */
     @BeforeEach
@@ -57,7 +63,7 @@ class EmployeeServiceImplUnitTest {
     }
 
     /**
-     * This test case verifies the functionality of the getEmployeeByName method in the EmployeeServiceImpl.
+     * Test case for EmployeeServiceImpl#getEmployeeByName method.
      * The method is expected to return the employee with the given name if such an employee exists.
      */
     @Test
@@ -69,8 +75,7 @@ class EmployeeServiceImplUnitTest {
     }
 
     /**
-     * This test case verifies the functionality of the getEmployeeByName method in the EmployeeServiceImpl when
-     * provided with an invalid name.
+     * Test case for EmployeeServiceImpl#getEmployeeByName method when provided with an invalid name.
      * The method is expected to return null if no employee with the given name exists.
      */
     @Test
@@ -82,7 +87,7 @@ class EmployeeServiceImplUnitTest {
     }
 
     /**
-     * This test case verifies the functionality of the exists method in the EmployeeServiceImpl.
+     * Test case for EmployeeServiceImpl#exists method.
      * The method is expected to return true if an employee with the given name exists.
      */
     @Test
@@ -94,8 +99,7 @@ class EmployeeServiceImplUnitTest {
     }
 
     /**
-     * This test case verifies the functionality of the exists method in the EmployeeServiceImpl when provided with
-     * an invalid name.
+     * Test case for EmployeeServiceImpl#exists method when provided with an invalid name.
      * The method is expected to return false if no employee with the given name exists.
      */
     @Test
@@ -107,7 +111,7 @@ class EmployeeServiceImplUnitTest {
     }
 
     /**
-     * This test case verifies the functionality of the getEmployeeById method in the EmployeeServiceImpl.
+     * Test case for EmployeeServiceImpl#getEmployeeById method.
      * The method is expected to return the employee with the given ID if such an employee exists.
      */
     @Test
@@ -119,8 +123,7 @@ class EmployeeServiceImplUnitTest {
     }
 
     /**
-     * This test case verifies the functionality of the getEmployeeById method in the EmployeeServiceImpl when
-     * provided with an invalid ID.
+     * Test case for EmployeeServiceImpl#getEmployeeById method when provided with an invalid ID.
      * The method is expected to return null if no employee with the given ID exists.
      */
     @Test
@@ -131,7 +134,7 @@ class EmployeeServiceImplUnitTest {
     }
 
     /**
-     * This test case verifies the functionality of the getAllEmployees method in the EmployeeServiceImpl.
+     * Test case for EmployeeServiceImpl#getAllEmployees method.
      * The method is expected to return all employees.
      */
     @Test
@@ -148,7 +151,7 @@ class EmployeeServiceImplUnitTest {
     }
 
     /**
-     * This helper method is used to verify that the findByName method of the EmployeeRepository is called exactly once.
+     * Helper method to verify that the findByName method of the EmployeeRepository is called exactly once.
      * It also resets the mock after the verification.
      *
      * @param name the name of the employee to find
@@ -159,7 +162,7 @@ class EmployeeServiceImplUnitTest {
     }
 
     /**
-     * This helper method is used to verify that the findById method of the EmployeeRepository is called exactly once.
+     * Helper method to verify that the findById method of the EmployeeRepository is called exactly once.
      * It also resets the mock after the verification.
      */
     private void verifyFindByIdIsCalledOnce() {
@@ -169,7 +172,7 @@ class EmployeeServiceImplUnitTest {
     }
 
     /**
-     * This helper method is used to verify that the findAll method of the EmployeeRepository is called exactly once.
+     * Helper method to verify that the findAll method of the EmployeeRepository is called exactly once.
      * It also resets the mock after the verification.
      */
     private void verifyFindAllEmployeesIsCalledOnce() {

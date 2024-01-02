@@ -5,119 +5,105 @@ import org.savea.models.Employee;
 import org.savea.services.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * @DataJpaTest is a Spring Boot annotation used for JPA tests. It disables full auto-configuration and instead apply only
- * configuration relevant to JPA tests. By default, tests annotated with @DataJpaTest are transactional and roll back at the
- * end of each test. They also use an embedded in-memory database (replacing any explicit or usually auto-configured DataSource).
+ * This class is a unit test for the EmployeeRepository class. It uses the @DataJpaTest annotation to set up a test
+ * environment with an embedded database and a TestEntityManager for handling database operations.
+ * The tests in this class cover the findByName, findById, and findAll methods of the EmployeeRepository.
  */
 @DataJpaTest
-public class EmployeeRepositoryUnitTest {
+class EmployeeRepositoryUnitTest {
 
-    @Autowired
-    private TestEntityManager entityManager;
-
+    /**
+     * The EmployeeRepository is the class being tested. It is automatically injected by Spring.
+     */
     @Autowired
     private EmployeeRepository employeeRepository;
 
     /**
-     * This test case verifies the functionality of the `findByName` method in the `EmployeeRepository`.
-     * The method is expected to return the employee with the given name if such an employee exists in the database.
-     * <p>
-     * The test case follows these steps:
-     * 1. An employee named "alex" is created and persisted in the database.
-     * 2. The `findByName` method is called on the `employeeRepository` with the name of the persisted employee.
-     * 3. An assertion is made to ensure that the name of the returned employee matches the name of the persisted employee.
+     * This test checks the findByName method of the EmployeeRepository. It creates and persists an employee,
+     * then checks that the findByName method correctly retrieves this employee.
      */
     @Test
     void whenFindByName_thenReturnEmployee() {
+        // Create and persist an employee
         Employee alex = new Employee("alex");
-        entityManager.persistAndFlush(alex);
+        employeeRepository.save(alex);
 
+        // Use the findByName method to retrieve the employee
         Employee found = employeeRepository.findByName(alex.getName());
+
+        // Check that the retrieved employee has the correct name
         assertThat(found.getName()).isEqualTo(alex.getName());
     }
 
     /**
-     * This test case verifies the functionality of the `findByName` method in the `EmployeeRepository` when
-     * provided with an invalid name.
-     * The method is expected to return null if no employee with the given name exists in the database.
-     * <p>
-     * The test case follows these steps:
-     * 1. The `findByName` method is called on the `employeeRepository` with an invalid name ("doesNotExist").
-     * 2. An assertion is made to ensure that the returned employee is null.
+     * This test checks the findByName method of the EmployeeRepository with an invalid name. It checks that the
+     * method correctly returns null when no employee with the given name exists.
      */
     @Test
     void whenInvalidName_thenReturnNull() {
+        // Use the findByName method with an invalid name
         Employee fromDb = employeeRepository.findByName("doesNotExist");
+
+        // Check that the method returned null
         assertThat(fromDb).isNull();
     }
 
     /**
-     * This test case verifies the functionality of the `findById` method in the `EmployeeRepository`.
-     * The method is expected to return the employee with the given ID if such an employee exists in the database.
-     * <p>
-     * The test case follows these steps:
-     * 1. An employee named "test" is created and persisted in the database.
-     * 2. The `findById` method is called on the `employeeRepository` with the ID of the persisted employee.
-     * 3. The `orElse` method is used to return null if the `Optional` returned by `findById` is empty.
-     * 4. An assertion is made to ensure that the returned employee is not null and that its name matches the name
-     * of the persisted employee.
+     * This test checks the findById method of the EmployeeRepository. It creates and persists an employee,
+     * then checks that the findById method correctly retrieves this employee.
      */
     @Test
     void whenFindById_thenReturnEmployee() {
+        // Create and persist an employee
         Employee emp = new Employee("test");
-        entityManager.persistAndFlush(emp);
+        employeeRepository.save(emp);
 
+        // Use the findById method to retrieve the employee
         Employee fromDb = employeeRepository.findById(emp.getId()).orElse(null);
+
+        // Check that the retrieved employee is not null and has the correct name
         assert fromDb != null;
         assertThat(fromDb.getName()).isEqualTo(emp.getName());
     }
 
     /**
-     * This test case verifies the functionality of the `findById` method in the `EmployeeRepository` when provided
-     * with an invalid ID.
-     * The method is expected to return null if no employee with the given ID exists in the database.
-     * <p>
-     * The test case follows these steps:
-     * 1. The `findById` method is called on the `employeeRepository` with an invalid ID (-11L).
-     * 2. The `orElse` method is used to return null if the `Optional` returned by `findById` is empty.
-     * 3. An assertion is made to ensure that the returned employee is null.
+     * This test checks the findById method of the EmployeeRepository with an invalid ID. It checks that the
+     * method correctly returns null when no employee with the given ID exists.
      */
     @Test
     void whenInvalidId_thenReturnNull() {
+        // Use the findById method with an invalid ID
         Employee fromDb = employeeRepository.findById(-11L).orElse(null);
+
+        // Check that the method returned null
         assertThat(fromDb).isNull();
     }
 
     /**
-     * This test case verifies the functionality of the `findAll` method in the `EmployeeRepository`.
-     * The method is expected to return all employees present in the database.
-     * <p>
-     * The test case follows these steps:
-     * 1. Three employees, Alex, Ron, and Bob, are created and persisted in the database.
-     * 2. The `findAll` method is called on the `employeeRepository` to retrieve all employees.
-     * 3. Assertions are made to ensure that the size of the returned list is 3 (as three employees were persisted)
-     * and that the names of the employees in the returned list match the names of the persisted employees.
+     * This test checks the findAll method of the EmployeeRepository. It creates and persists several employees,
+     * then checks that the findAll method correctly retrieves all of these employees.
      */
     @Test
     void givenSetOfEmployees_whenFindAll_thenReturnAllEmployees() {
+        // Create and persist several employees
         Employee alex = new Employee("alex");
         Employee ron = new Employee("ron");
         Employee bob = new Employee("bob");
 
-        entityManager.persist(alex);
-        entityManager.persist(bob);
-        entityManager.persist(ron);
-        entityManager.flush();
+        employeeRepository.save(alex);
+        employeeRepository.save(bob);
+        employeeRepository.save(ron);
 
+        // Use the findAll method to retrieve all employees
         List<Employee> allEmployees = employeeRepository.findAll();
 
+        // Check that the correct number of employees was retrieved and that their names are correct
         assertThat(allEmployees)
                 .hasSize(3)
                 .extracting(Employee::getName)
