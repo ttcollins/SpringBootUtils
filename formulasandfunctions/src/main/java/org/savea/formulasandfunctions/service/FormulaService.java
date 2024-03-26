@@ -1,18 +1,39 @@
 package org.savea.formulasandfunctions.service;
 
-import net.objecthunter.exp4j.Expression;
-import net.objecthunter.exp4j.ExpressionBuilder;
+import org.savea.formulasandfunctions.models.FormulaStoreRecord;
 import org.savea.formulasandfunctions.models.ModelAttributes;
-import org.springframework.stereotype.Service;
 
-@Service
-public class FormulaService {
-    public double evaluateFormula(String formula, ModelAttributes attributes) {
-        Expression expression = new ExpressionBuilder(formula)
-                .variables("x", "y")
-                .build()
-                .setVariable("x", attributes.getX())
-                .setVariable("y", attributes.getY());
-        return expression.evaluate();
-    }
+import java.util.List;
+
+public interface FormulaService {
+
+    /**
+     * Evaluate the formula with the given attributes
+     * @param formula, the formula to evaluate
+     * @param attributes, the attributes to use in the formula
+     * @return the result of the formula
+     */
+    double evaluateFormula(String formula, ModelAttributes attributes);
+
+    /**
+     * Save the formula store record
+     * This method is used to validate if the formula should be stored, and if so, store it
+     * @param formulaStoreRecord, the formula store record to save
+     * @return the saved formula store record
+     */
+    FormulaStoreRecord storeNewFormula(FormulaStoreRecord formulaStoreRecord) throws ClassNotFoundException, NoSuchFieldException;
+
+    /**
+     * Save the formula store record
+     * This method is used to simply store the formula
+     * @param formulaStoreRecord, the formula store record to save
+     * @return the saved formula store record
+     */
+    FormulaStoreRecord saveFormula(FormulaStoreRecord formulaStoreRecord);
+
+    /**
+     * Get all formula store records
+     * @return a list of all formula store records
+     */
+    List<FormulaStoreRecord> getAllFormulaStoreRecords();
 }

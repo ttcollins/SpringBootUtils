@@ -2,18 +2,18 @@ package org.savea.formulasandfunctions.services;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.savea.formulasandfunctions.models.ModelAttributes;
-import org.savea.formulasandfunctions.service.FormulaService;
-import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.savea.formulasandfunctions.service.impl.FormulaServiceImpl;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-public class FormulaServiceIntegrationTest {
+public class FormulaServiceImplIntegrationTest {
 
-    @SpyBean
-    private FormulaService formulaService;
+    @InjectMocks
+    private FormulaServiceImpl formulaService;
 
     @Test
     public void givenFormulaWithParameters_whenCalculateFormula_thenResult() {
