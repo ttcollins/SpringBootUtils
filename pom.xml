@@ -18,6 +18,7 @@
     <modules>
         <module>SpringBootTesting</module>
         <module>springretry</module>
+        <module>formulasandfunctions</module>
     </modules>
 
     <properties>
