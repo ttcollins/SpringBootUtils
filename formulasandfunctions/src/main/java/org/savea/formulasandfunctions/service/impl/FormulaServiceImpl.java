@@ -33,6 +33,14 @@ public class FormulaServiceImpl implements FormulaService {
     }
 
     @Override
+    public <T, M> double evaluateProjectFormulas(String formula, T fieldsModel, M variablesModel) {
+        String formattedFieldFormula = stringUtilsService.formatFieldFormula(formula, fieldsModel);
+        String formattedVariableFormula = stringUtilsService.formatVariableFormula(formattedFieldFormula, variablesModel);
+        Expression expression = new ExpressionBuilder(formattedVariableFormula).build();
+        return expression.evaluate();
+    }
+
+    @Override
     public FormulaStoreRecord storeNewFormula(FormulaStoreRecord formulaStoreRecord)
             throws ClassNotFoundException, NoSuchFieldException {
         validateModel(formulaStoreRecord);
@@ -85,7 +93,8 @@ public class FormulaServiceImpl implements FormulaService {
         List<String> variables = stringUtilsService.extractVariables(formulaStoreRecord.getFormula());
         for (String variable : variables) {
             if (!projectClassUtilsService.doesClassHaveAttribute(formulaStoreRecord.getTableName(), variable))
-                throw new NoSuchFieldException("Variable with name " + variable + " is not part of the model with name " + formulaStoreRecord.getTableName());
+                throw new NoSuchFieldException("Variable with name " + variable + " is not part of the model with name "
+                        + formulaStoreRecord.getTableName());
         }
     }
 
@@ -115,5 +124,23 @@ public class FormulaServiceImpl implements FormulaService {
     @Override
     public List<FormulaStoreRecord> getAllFormulaStoreRecords() {
         return formulaStoreRecordRepository.findAll();
+    }
+
+    @Override
+    public FormulaStoreRecord getActiveFormulaStoreRecordOfSpecificEntityAndAttribute(String entityName,
+                                                                                      String attributeName) {
+        /*Get the active FormulaStoreRecords for the provided entity and attribute.
+        * If more than one exists, throw an exception informing the user that more than one active
+        * formula exists and only one should exist.*/
+        List<FormulaStoreRecord> formulaStoreRecords = formulaStoreRecordRepository
+                .findByTableNameAndColumnNameAndFormulaStatus(entityName, attributeName, FormulaStatus.ACTIVE);
+
+        if (formulaStoreRecords == null || formulaStoreRecords.isEmpty())
+            throw new RuntimeException("No active formula exists for the entity " + entityName + " and attribute " + attributeName);
+
+        if (formulaStoreRecords.size() > 1)
+            throw new RuntimeException("More than one active formula exists for the entity " + entityName + " and attribute " + attributeName);
+
+        return formulaStoreRecords.get(0);
     }
 }

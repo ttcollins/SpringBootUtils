@@ -11,7 +11,7 @@ public record QuotationResponse(
         double poles,
         double equipment,
         BigDecimal nrc,
-        FormulaStoreRecordResponse nrcFormulaUsed
+        String nrcFormulaUsed
 ) {
 
     public static List<QuotationResponse> toList(List<Quotation> quotations) {
@@ -24,6 +24,6 @@ public record QuotationResponse(
                 quotation.getPoles(),
                 quotation.getEquipment(),
                 quotation.getNrc(),
-                new FormulaStoreRecordResponse(quotation.getNrcFormulaUsed()));
+                quotation.getNrcFormulaUsed());
     }
 }

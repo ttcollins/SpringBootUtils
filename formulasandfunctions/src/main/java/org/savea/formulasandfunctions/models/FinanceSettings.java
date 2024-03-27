@@ -49,4 +49,16 @@ public class FinanceSettings {
         this.equipmentServiceCost = equipmentServiceCost;
     }
 
+    @Override
+    public String toString() {
+        return "FinanceSettings{" +
+                "id=" + id +
+                ", fiberDistanceCost=" + fiberDistanceCost +
+                ", polesCost=" + polesCost +
+                ", equipmentCost=" + equipmentCost +
+                ", fiberStringingCost=" + fiberStringingCost +
+                ", polePlantingCost=" + polePlantingCost +
+                ", equipmentServiceCost=" + equipmentServiceCost +
+                '}';
+    }
 }

@@ -32,9 +32,8 @@ public class Quotation {
     @Column(name = "nrc", columnDefinition = "Decimal(20,2) default'0.00'")
     private BigDecimal nrc;
 
-    @ManyToOne
-    @JoinColumn(name = "nrc_formula_used")
-    private FormulaStoreRecord nrcFormulaUsed;
+    @Column(name = "nrc_formula_used", columnDefinition = "TEXT")
+    private String nrcFormulaUsed;
 
     public Quotation(double fiberDistance, double poles, double equipment, BigDecimal nrc) {
         this.fiberDistance = fiberDistance;
@@ -43,4 +42,15 @@ public class Quotation {
         this.nrc = nrc;
     }
 
+    @Override
+    public String toString() {
+        return "Quotation{" +
+                "id=" + id +
+                ", fiberDistance=" + fiberDistance +
+                ", poles=" + poles +
+                ", equipment=" + equipment +
+                ", nrc=" + nrc +
+                ", nrcFormulaUsed=" + nrcFormulaUsed +
+                '}';
+    }
 }
