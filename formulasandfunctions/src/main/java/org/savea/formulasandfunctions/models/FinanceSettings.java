@@ -39,4 +39,14 @@ public class FinanceSettings {
     @Column(name = "equipment_service_cost", columnDefinition = "Decimal(20,2) default'0.00'")
     private BigDecimal equipmentServiceCost;
 
+    public FinanceSettings(BigDecimal fiberDistanceCost, BigDecimal polesCost, BigDecimal equipmentCost,
+                           BigDecimal fiberStringingCost, BigDecimal polePlantingCost, BigDecimal equipmentServiceCost) {
+        this.fiberDistanceCost = fiberDistanceCost;
+        this.polesCost = polesCost;
+        this.equipmentCost = equipmentCost;
+        this.fiberStringingCost = fiberStringingCost;
+        this.polePlantingCost = polePlantingCost;
+        this.equipmentServiceCost = equipmentServiceCost;
+    }
+
 }

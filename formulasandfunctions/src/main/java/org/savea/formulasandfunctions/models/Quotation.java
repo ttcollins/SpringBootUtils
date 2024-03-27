@@ -21,13 +21,13 @@ public class Quotation {
     private Long id;
 
     @Column(name = "fiber_distance")
-    private String fiberDistance;
+    private double fiberDistance;
 
     @Column(name = "poles")
-    private String poles;
+    private double poles;
 
     @Column(name = "equipment")
-    private String equipment;
+    private double equipment;
 
     @Column(name = "nrc", columnDefinition = "Decimal(20,2) default'0.00'")
     private BigDecimal nrc;
@@ -35,5 +35,12 @@ public class Quotation {
     @ManyToOne
     @JoinColumn(name = "nrc_formula_used")
     private FormulaStoreRecord nrcFormulaUsed;
+
+    public Quotation(double fiberDistance, double poles, double equipment, BigDecimal nrc) {
+        this.fiberDistance = fiberDistance;
+        this.poles = poles;
+        this.equipment = equipment;
+        this.nrc = nrc;
+    }
 
 }

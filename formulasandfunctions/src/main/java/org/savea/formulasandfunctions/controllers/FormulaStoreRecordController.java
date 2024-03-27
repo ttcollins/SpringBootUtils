@@ -7,26 +7,24 @@ import org.savea.formulasandfunctions.controllers.dtos.responses.FormulaStoreRec
 import org.savea.formulasandfunctions.service.FormulaService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
 @Slf4j
+@RequestMapping("/formulas")
 public class FormulaStoreRecordController {
 
     private final FormulaService formulaService;
 
-    @PostMapping("/store-formula")
+    @PostMapping
     public ResponseEntity<Object> storeFormula(@RequestBody FormulaStoreRecordDto dto)
             throws NoSuchFieldException, ClassNotFoundException {
         log.info("Received Data: {}", dto.toString());
         return new ResponseEntity<>(formulaService.storeNewFormula(dto.toModel()), HttpStatus.CREATED);
     }
 
-    @GetMapping("/get-formulas")
+    @GetMapping
     public ResponseEntity<Object> getFormulas() {
         return new ResponseEntity<>(
                 FormulaStoreRecordResponse.toList(formulaService.getAllFormulaStoreRecords()),

@@ -42,7 +42,7 @@ class FormulaStoreRecordControllerIntegrationTest {
 
     @Test
     void givenFormula_whenStoreFormula_thenRetrieveFormula() throws Exception {
-        mvc.perform(post("/store-formula")
+        mvc.perform(post("/formulas")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(JsonUtil.toJson(formulaStoreRecord)))
                 .andExpect(status().isCreated())
@@ -53,19 +53,19 @@ class FormulaStoreRecordControllerIntegrationTest {
     @Test
     void givenFormula_whenStoreNewFormula_thenOldFormulaInactive() throws Exception {
         //Store the first record
-        mvc.perform(post("/store-formula")
+        mvc.perform(post("/formulas")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(JsonUtil.toJson(formulaStoreRecord)))
                 .andExpect(status().isCreated());
 
         //Store the second record
-        mvc.perform(post("/store-formula")
+        mvc.perform(post("/formulas")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(JsonUtil.toJson(formulaStoreRecord)))
                 .andExpect(status().isCreated());
 
         //Fetch all the records and make sure that only one is ACTIVE
-        mvc.perform(get("/get-formulas"))
+        mvc.perform(get("/formulas"))
                 .andDo(print())
                 .andDo(result -> {
                     List<Map<String, Object>> formulas = JsonPath.parse(result.getResponse().getContentAsString()).read("$");
