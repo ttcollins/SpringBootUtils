@@ -52,7 +52,7 @@ A formula stored should match a specific syntax which makes use of specific flag
 
 ### Formula Creation
 
-![FormulaCreation.png](assets/Formula Creation.png?t=1712059080665)
+![Formula Creation](https://github.com/ttcollins/SpringBootUtils/assets/51233620/97ce1d03-556d-4975-941d-93bf643fea5b)
 
 ```abc
 An example of the formula that can be supplied:
@@ -63,7 +63,7 @@ An example of the formula that can be supplied:
 
 For the formula to work, the columns associated with `field('columnName')` in the financeSettings model must not be null.
 
-![FormulaUsage.png](assets/Formula Usage.png)
+![Formula Usage](https://github.com/ttcollins/SpringBootUtils/assets/51233620/0d1e34a5-f45c-401c-870e-6f64029c7760)
 
 ## Running Tests
 
