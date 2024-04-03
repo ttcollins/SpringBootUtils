@@ -1,6 +1,5 @@
 package org.savea.formulasandfunctions.service;
 
-import org.savea.formulasandfunctions.models.FinanceSettings;
 import org.savea.formulasandfunctions.models.Quotation;
 
 import java.util.List;
