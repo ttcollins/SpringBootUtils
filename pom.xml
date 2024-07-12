@@ -20,6 +20,7 @@
         <module>springretry</module>
         <module>formulasandfunctions</module>
         <module>flyway</module>
+        <module>springbatch</module>
     </modules>
 
     <properties>
