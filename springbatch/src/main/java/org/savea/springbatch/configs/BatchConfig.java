@@ -70,6 +70,10 @@ public class BatchConfig {
                 .build();
     }
 
+    /**
+     * Task executor meant to help with handling concurrent tasks while utilizing the threads available in the computer.
+     * @return TaskExecutor
+     */
     @Bean
     public TaskExecutor taskExecutor() {
         SimpleAsyncTaskExecutor asyncTaskExecutor = new SimpleAsyncTaskExecutor();
