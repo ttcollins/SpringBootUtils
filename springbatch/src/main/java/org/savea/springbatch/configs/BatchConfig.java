@@ -1,43 +1,32 @@
 package org.savea.springbatch.configs;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.savea.springbatch.models.Student;
-import org.savea.springbatch.repo.StudentRepository;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
-import org.springframework.batch.item.data.RepositoryItemWriter;
-import org.springframework.batch.item.file.FlatFileItemReader;
-import org.springframework.batch.item.file.LineMapper;
-import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
-import org.springframework.batch.item.file.mapping.DefaultLineMapper;
-import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
+import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.transaction.PlatformTransactionManager;
 
+import java.io.File;
+import java.io.IOException;
+
 @Configuration
 @RequiredArgsConstructor
+@Slf4j
 public class BatchConfig {
 
     private final JobRepository jobRepository;
     private final PlatformTransactionManager platformTransactionManager;
-    private final StudentRepository studentRepository;
-
-    @Bean
-    public FlatFileItemReader<Student> itemReader() {
-        FlatFileItemReader<Student> itemReader = new FlatFileItemReader<>();
-        itemReader.setResource(new FileSystemResource("springbatch/src/main/resources/students.csv"));
-        itemReader.setName("csvReader");
-        itemReader.setLinesToSkip(1);
-        itemReader.setLineMapper(lineMapper());
-        return itemReader;
-    }
+    private final StudentWriter studentWriter;
+    private final StudentItemReader studentItemReader;
 
     @Bean
     public StudentProcessor processor() {
@@ -45,21 +34,44 @@ public class BatchConfig {
     }
 
     @Bean
-    public RepositoryItemWriter<Student> write() {
-        RepositoryItemWriter<Student> writer = new RepositoryItemWriter<>();
-        writer.setRepository(studentRepository);
-        writer.setMethodName("save");
-        return writer;
-    }
-
-    @Bean
     public Step importStep() {
         return new StepBuilder("csvImport", jobRepository)
                 .<Student, Student>chunk(10, platformTransactionManager)
-                .reader(itemReader())
+                .reader(studentItemReader.itemReader())
                 .processor(processor())
-                .writer(write())
+                .writer(studentWriter.write())
                 .taskExecutor(taskExecutor())
+                .build();
+    }
+
+    @Bean
+    public Step importStepForCsv() {
+        return new StepBuilder("uploadedCsvImport", jobRepository)
+                .<Student, Student>chunk(10, platformTransactionManager)
+                .reader(studentItemReader.csvItemReader(null))
+                .processor(processor())
+                .writer(studentWriter.write())
+                .taskExecutor(taskExecutor())
+                .build();
+    }
+
+    @Bean
+    public Step cleanupStep() {
+        return new StepBuilder("cleanupStep", jobRepository)
+                .tasklet((contribution, chunkContext) -> {
+                    String filePath = (String) chunkContext.getStepContext().getJobParameters().get("filePath");
+                    File file = new File(filePath);
+                    if (file.exists()) {
+                        boolean deleted = file.delete();
+                        if (deleted) {
+                            return RepeatStatus.FINISHED;
+                        } else {
+                            throw new IOException("Failed to delete the file: " + filePath);
+                        }
+                    } else {
+                        throw new IOException("File not found: " + filePath);
+                    }
+                }, platformTransactionManager)
                 .build();
     }
 
@@ -70,31 +82,26 @@ public class BatchConfig {
                 .build();
     }
 
+    @Bean
+    public Job runCsvJob() {
+        return new JobBuilder("importStudentsFromCsv", jobRepository)
+                .start(studentItemReader.validateCsvHeaderStep())
+                .next(importStep())
+                .next(cleanupStep())
+                .build();
+    }
+
     /**
      * Task executor meant to help with handling concurrent tasks while utilizing the threads available in the computer.
+     *
      * @return TaskExecutor
      */
     @Bean
     public TaskExecutor taskExecutor() {
+        int availableProcessors = Runtime.getRuntime().availableProcessors();
+        log.info("Available processors: {}", availableProcessors);
         SimpleAsyncTaskExecutor asyncTaskExecutor = new SimpleAsyncTaskExecutor();
-        asyncTaskExecutor.setConcurrencyLimit(10);
+        asyncTaskExecutor.setConcurrencyLimit(availableProcessors);
         return asyncTaskExecutor;
-    }
-
-    private LineMapper<Student> lineMapper() {
-        DefaultLineMapper<Student> lineMapper = new DefaultLineMapper<>();
-
-        DelimitedLineTokenizer lineTokenizer = new DelimitedLineTokenizer();
-        lineTokenizer.setDelimiter(",");
-        lineTokenizer.setStrict(false);
-        lineTokenizer.setNames("id", "firstname", "lastname", "age");
-
-        BeanWrapperFieldSetMapper<Student> fieldSetMapper = new BeanWrapperFieldSetMapper<>();
-        fieldSetMapper.setTargetType(Student.class);
-
-        lineMapper.setLineTokenizer(lineTokenizer);
-        lineMapper.setFieldSetMapper(fieldSetMapper);
-
-        return lineMapper;
     }
 }
