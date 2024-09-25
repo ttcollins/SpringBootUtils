@@ -1,0 +1,4 @@
+POST http://localhost:8080/locations?
+    name={{$random.alphanumeric(8)}}&
+    latitude={{$random.float(100)}}&
+    longitude={{$random.float(100)}}
