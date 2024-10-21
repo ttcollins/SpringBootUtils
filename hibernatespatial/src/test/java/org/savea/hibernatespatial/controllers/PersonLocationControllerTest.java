@@ -16,6 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.List;
 
@@ -50,7 +51,7 @@ class PersonLocationControllerTest {
 
     @Test
     void testSaveLocation() throws Exception {
-        mockMvc.perform(post("/locations")
+        MvcResult result = mockMvc.perform(post("/locations")
                         .param("name", "Charlie")
                         .param("latitude", "30.0")
                         .param("longitude", "30.0")
@@ -58,7 +59,10 @@ class PersonLocationControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("Charlie"))
                 .andExpect(jsonPath("$.latitude").value(30.0))
-                .andExpect(jsonPath("$.longitude").value(30.0));
+                .andExpect(jsonPath("$.longitude").value(30.0))
+                .andReturn();
+
+        System.out.println(result.getResponse().getContentAsString());
     }
 
     @Test

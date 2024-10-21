@@ -1,7 +1,6 @@
 package org.savea.hibernatespatial.services;
 
 import org.savea.hibernatespatial.controllers.dtos.PersonLocationDTO;
-import org.savea.hibernatespatial.models.PersonLocation;
 
 import java.util.List;
 

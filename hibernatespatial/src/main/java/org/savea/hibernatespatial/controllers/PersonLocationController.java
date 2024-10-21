@@ -2,7 +2,6 @@ package org.savea.hibernatespatial.controllers;
 
 import lombok.RequiredArgsConstructor;
 import org.savea.hibernatespatial.controllers.dtos.PersonLocationDTO;
-import org.savea.hibernatespatial.models.PersonLocation;
 import org.savea.hibernatespatial.services.PersonLocationService;
 import org.springframework.web.bind.annotation.*;
 
