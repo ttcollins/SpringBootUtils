@@ -3,6 +3,7 @@ package org.savea.todoapp.controllers;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
+import org.savea.todoapp.models.Comment;
 import org.savea.todoapp.models.Status;
 import org.savea.todoapp.models.Task;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,5 +69,52 @@ class TaskControllerIntegrationTest {
         assertThat(feed.size()).isGreaterThanOrEqualTo(1);
 
         System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(feed));
+    }
+
+    @Test
+    @WithMockUser
+    void addCommentAndFeed() throws Exception {
+        Task t = new Task();
+        t.setTitle("Comment Task");
+        t.setDescription("desc");
+
+        MvcResult createRes = mvc.perform(post("/api/tasks")
+                        .with(SecurityMockMvcRequestPostProcessors.csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsBytes(t)))
+                .andExpect(status().isCreated())
+                .andReturn();
+
+        Task created = mapper.readValue(createRes.getResponse().getContentAsByteArray(), Task.class);
+
+        Comment c = new Comment();
+        c.setBody("first comment");
+
+        mvc.perform(post("/api/tasks/" + created.getId() + "/comments")
+                        .with(SecurityMockMvcRequestPostProcessors.csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsBytes(c)))
+                .andExpect(status().isOk());
+
+        MvcResult feedRes = mvc.perform(get("/api/tasks/" + created.getId() + "/activity"))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        JsonNode feed = mapper.readTree(feedRes.getResponse().getContentAsByteArray());
+        assertThat(feed.isArray()).isTrue();
+
+        boolean commentFound = false;
+        for (JsonNode entry : feed) {
+            JsonNode diff = entry.get("diff");
+            if (diff != null && diff.has("comments")) {
+                JsonNode newValue = diff.get("comments").get("newValue");
+                if (newValue != null && newValue.toString().contains("first comment")) {
+                    commentFound = true;
+                    break;
+                }
+            }
+        }
+
+        assertThat(commentFound).isTrue();
     }
 }
