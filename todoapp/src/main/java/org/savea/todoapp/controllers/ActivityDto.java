@@ -1,6 +1,6 @@
 package org.savea.todoapp.controllers;
 
-import org.savea.todoapp.config.DiffUtil.Change;
+import org.savea.todoapp.config.Change;
 
 import java.util.Date;
 import java.util.Map;

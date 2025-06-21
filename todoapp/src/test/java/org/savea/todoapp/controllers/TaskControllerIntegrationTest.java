@@ -10,6 +10,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
@@ -35,6 +36,7 @@ class TaskControllerIntegrationTest {
         t.setDescription("desc");
 
         MvcResult createRes = mvc.perform(post("/api/tasks")
+                        .with(SecurityMockMvcRequestPostProcessors.csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsBytes(t)))
                 .andExpect(status().isCreated())
@@ -47,6 +49,7 @@ class TaskControllerIntegrationTest {
         created.setStatus(Status.COMPLETED);
 
         MvcResult updateRes = mvc.perform(put("/api/tasks/" + created.getId())
+                        .with(SecurityMockMvcRequestPostProcessors.csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsBytes(created)))
                 .andExpect(status().isOk())
@@ -63,5 +66,7 @@ class TaskControllerIntegrationTest {
         JsonNode feed = mapper.readTree(feedRes.getResponse().getContentAsByteArray());
         assertThat(feed.isArray()).isTrue();
         assertThat(feed.size()).isGreaterThanOrEqualTo(1);
+
+        System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(feed));
     }
 }
