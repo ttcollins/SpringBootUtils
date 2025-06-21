@@ -7,6 +7,16 @@ import java.util.Objects;
 
 public class DiffUtil{
 
+    /**
+     * Computes the differences between two objects by comparing the values of their fields.
+     * Only fields with different values are included in the resulting map.
+     *
+     * @param oldObj the original object to compare
+     * @param newObj the updated object to compare
+     * @return a map where the keys are field names and the values are {@code Change<?>} objects representing
+     *         the old and new values of the fields that have changed
+     * @throws IllegalAccessException if the fields of the objects are not accessible
+     */
     public static Map<String, Change<?>> diff(Object oldObj, Object newObj) throws IllegalAccessException {
         Map<String, Change<?>> changes = new LinkedHashMap<>();
         for (Field f : oldObj.getClass().getDeclaredFields()) {

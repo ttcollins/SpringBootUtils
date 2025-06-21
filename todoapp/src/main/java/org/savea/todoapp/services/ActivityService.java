@@ -35,6 +35,7 @@ public class ActivityService {
 
                     Map<String, Change<?>> diff;
                     try {
+                        // If it's the first revision, there's no previous revision to compare against
                         diff = i == 0 ? Map.of()
                                 : DiffUtil.diff(reader.find(Task.class, taskId, revNums.get(i - 1)), snapshot);
                     } catch (IllegalAccessException e) {
