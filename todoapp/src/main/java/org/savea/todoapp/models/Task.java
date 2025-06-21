@@ -1,5 +1,6 @@
 package org.savea.todoapp.models;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.envers.Audited;
@@ -20,5 +21,6 @@ public class Task {
     private Status status = Status.PENDING;
 
     @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<Comment> comments = new ArrayList<>();
 }
