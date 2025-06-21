@@ -3,7 +3,9 @@
 ## Overview
 This module contains a minimal TODO application built with Spring Boot. It exposes
 REST endpoints for managing tasks and their comments while capturing revision
-history via Hibernate Envers.
+history via Hibernate Envers. The `ActivityService` now uses generics so any
+audited entity can have its activity feed retrieved via
+`activityService.getActivity(YourEntity.class, id)`.
 
 ## Required Dependencies
 The module relies on the following dependencies as declared in `pom.xml`:
