@@ -116,5 +116,70 @@ class TaskControllerIntegrationTest {
         }
 
         assertThat(commentFound).isTrue();
+        System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(feed));
+    }
+
+    @Test
+    @WithMockUser
+    void createUpdateCommentAndFeed() throws Exception {
+        Task t = new Task();
+        t.setTitle("Test Task");
+        t.setDescription("desc");
+
+        MvcResult createRes = mvc.perform(post("/api/tasks")
+                        .with(SecurityMockMvcRequestPostProcessors.csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsBytes(t)))
+                .andExpect(status().isCreated())
+                .andReturn();
+
+        Task created = mapper.readValue(createRes.getResponse().getContentAsByteArray(), Task.class);
+        assertThat(created.getId()).isNotNull();
+
+        created.setTitle("Updated title");
+        created.setStatus(Status.COMPLETED);
+
+        MvcResult updateRes = mvc.perform(put("/api/tasks/" + created.getId())
+                        .with(SecurityMockMvcRequestPostProcessors.csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsBytes(created)))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        Task updated = mapper.readValue(updateRes.getResponse().getContentAsByteArray(), Task.class);
+        assertThat(updated.getTitle()).isEqualTo("Updated title");
+        assertThat(updated.getStatus()).isEqualTo(Status.COMPLETED);
+
+        Comment c = new Comment();
+        c.setBody("first comment");
+
+        mvc.perform(post("/api/tasks/" + updated.getId() + "/comments")
+                        .with(SecurityMockMvcRequestPostProcessors.csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsBytes(c)))
+                .andExpect(status().isOk());
+
+        MvcResult feedRes = mvc.perform(get("/api/tasks/" + created.getId() + "/activity"))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        JsonNode feed = mapper.readTree(feedRes.getResponse().getContentAsByteArray());
+        assertThat(feed.isArray()).isTrue();
+        assertThat(feed.size()).isGreaterThanOrEqualTo(1);
+
+        boolean commentFound = false;
+        for (JsonNode entry : feed) {
+            JsonNode diff = entry.get("diff");
+            if (diff != null && diff.has("comments")) {
+                JsonNode newValue = diff.get("comments").get("newValue");
+                if (newValue != null && newValue.toString().contains("first comment")) {
+                    commentFound = true;
+                    break;
+                }
+            }
+        }
+
+        assertThat(commentFound).isTrue();
+        System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(feed));
     }
 }
