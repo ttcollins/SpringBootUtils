@@ -5,6 +5,7 @@ import java.util.List;
 import org.savea.todoapp.models.Comment;
 import org.savea.todoapp.models.Task;
 import org.savea.todoapp.services.ActivityService;
+import org.savea.todoapp.controllers.ActivityDto;
 import org.savea.todoapp.services.TaskService;
 import org.savea.todoapp.services.repo.TaskRepository;
 import org.springframework.data.history.Revisions;
@@ -24,7 +25,7 @@ public class TaskController {
 
     @GetMapping("/{id}/activity")
     public List<ActivityDto> feed(@PathVariable Long id) {
-        return activityService.getTaskActivity(id);
+        return activityService.getActivity(Task.class, id);
     }
 
     @PostMapping
