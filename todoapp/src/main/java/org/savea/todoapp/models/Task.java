@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Audited
+@Audited(withModifiedFlag = true)
 @Data
 @EqualsAndHashCode(exclude = "comments")
 public class Task {
