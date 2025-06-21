@@ -7,7 +7,7 @@ import lombok.EqualsAndHashCode;
 import org.hibernate.envers.Audited;
 
 @Entity
-@Audited
+@Audited(withModifiedFlag = true)
 @Data
 @EqualsAndHashCode(exclude = "task")
 public class Comment {
