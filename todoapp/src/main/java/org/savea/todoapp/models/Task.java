@@ -3,6 +3,7 @@ package org.savea.todoapp.models;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.hibernate.envers.Audited;
 
 import java.util.ArrayList;
@@ -11,6 +12,7 @@ import java.util.List;
 @Entity
 @Audited
 @Data
+@EqualsAndHashCode(exclude = "comments")
 public class Task {
 
     @Id @GeneratedValue
