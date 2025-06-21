@@ -17,7 +17,8 @@ public class UserRevisionListener implements RevisionListener {
         UserRevision rev = (UserRevision) entity;
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         rev.setUsername(auth != null ? auth.getName() : "anonymous");
-        rev.setIp(RequestContextHolder.currentRequestAttributes()
-                .getAttribute("CLIENT_IP", SCOPE_REQUEST).toString());
+        Object clientIp = RequestContextHolder.currentRequestAttributes()
+                .getAttribute("CLIENT_IP", SCOPE_REQUEST);
+        rev.setIp(clientIp != null ? clientIp.toString() : "unknown");
     }
 }
