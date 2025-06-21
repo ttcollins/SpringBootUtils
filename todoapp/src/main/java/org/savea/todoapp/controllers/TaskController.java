@@ -1,6 +1,7 @@
 package org.savea.todoapp.controllers;
 
 import lombok.RequiredArgsConstructor;
+import java.util.List;
 import org.savea.todoapp.models.Comment;
 import org.savea.todoapp.models.Task;
 import org.savea.todoapp.services.ActivityService;
@@ -15,7 +16,7 @@ import static org.springframework.http.HttpStatus.CREATED;
 @RestController
 @RequestMapping("/api/tasks")
 @RequiredArgsConstructor
-class TaskController {
+public class TaskController {
 
     private final TaskService svc;
     private final TaskRepository tasks;
